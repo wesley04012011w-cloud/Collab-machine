@@ -15,6 +15,7 @@ class MainActivity : Activity() {
     private lateinit var url: EditText
     private lateinit var model: EditText
     private lateinit var prompt: EditText
+    private lateinit var token: EditText
     private lateinit var output: TextView
 
     private fun request(path: String, method: String, body: String? = null): String {
@@ -24,6 +25,8 @@ class MainActivity : Activity() {
         c.connectTimeout = 8000
         c.readTimeout = 300000
         c.setRequestProperty("Content-Type", "application/json")
+        val auth = token.text.toString().trim()
+        if (auth.isNotEmpty()) c.setRequestProperty("Authorization", "Bearer $auth")
         if (body != null) {
             c.doOutput = true
             c.outputStream.use { it.write(body.toByteArray()) }
@@ -75,6 +78,10 @@ class MainActivity : Activity() {
                 s
             }
         })
+        root.addView(label("Token do Agent (se configurado)"))
+        token = edit("OLLAMA_STUDIO_TOKEN")
+        root.addView(token)
+
         root.addView(label("Modelo"))
         model = edit("ex.: llama3.2:3b")
         root.addView(model)
